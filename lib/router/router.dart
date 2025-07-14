@@ -84,10 +84,12 @@ GoRouter getRouter({
           return navigationShell;
         },
         routes: [
+          // Auth routes
           GoRoute(
             path: Routes.signIn,
             builder: (context, state) => SignInPage(),
           ),
+          // Private routes
           tabRoutes,
           GoRoute(
             path: Routes.detailsPage,
