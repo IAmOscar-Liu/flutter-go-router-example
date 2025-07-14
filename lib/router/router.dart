@@ -51,39 +51,47 @@ final tabRoutes = StatefulShellRoute.indexedStack(
   ],
 );
 
-GoRouter getRouter(bool isLoggedIn) {
+GoRouter getRouter({
+  String? initialLocation,
+  required bool isLoggedIn,
+  required bool isLoading,
+  required dynamic error,
+}) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: Routes.initialPage,
+    initialLocation: initialLocation ?? Routes.initialPage,
     routes: [
-      GoRoute(
-        path: Routes.signIn,
-        builder: (context, state) => SignInPage(),
-        redirect: (BuildContext context, GoRouterState state) {
-          return isLoggedIn ? Routes.initialPage : null;
-        },
-      ),
       ShellRoute(
-        builder: (context, state, child) {
-          // Check auth status and redirect if needed
-          if (!isLoggedIn) {
-            // Redirect manually if needed
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.go(Routes.signIn);
-            });
-            return SizedBox(); // return empty until redirect
-          }
+        redirect: (context, state) {
+          if (isLoading || error != null) return null;
 
-          // Otherwise, wrap child in shared layout
-          return child;
+          final inPrivatePage = state.matchedLocation != Routes.signIn;
+          if (isLoggedIn && !inPrivatePage) {
+            return Routes.homePage;
+          } else if (!isLoggedIn) {
+            return Routes.signIn;
+          }
+          return null;
+        },
+        builder: (context, state, navigationShell) {
+          if (isLoading) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          } else if (error != null) {
+            return Scaffold(
+              body: Center(child: Text("Failed to login $error")),
+            );
+          }
+          return navigationShell;
         },
         routes: [
+          GoRoute(
+            path: Routes.signIn,
+            builder: (context, state) => SignInPage(),
+          ),
           tabRoutes,
           GoRoute(
             path: Routes.detailsPage,
-            builder: (BuildContext context, GoRouterState state) {
-              return const DetailsPage();
-            },
+            builder: (context, state) => DetailsPage(),
           ),
         ],
       ),

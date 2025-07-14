@@ -7,12 +7,14 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('This is Sign-in Page', style: TextStyle(fontSize: 20)),
+            const Text(
+              'Flutter go_router demo',
+              style: TextStyle(fontSize: 20),
+            ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: () {

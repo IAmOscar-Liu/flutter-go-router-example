@@ -11,28 +11,55 @@ class MyApp extends StatefulWidget {
 
   static void login(BuildContext context) {
     _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-    state?.setIsAuthenticated(true);
+    state?.login();
   }
 
   static void logout(BuildContext context) {
     _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-    state?.setIsAuthenticated(false);
+    state?.logout();
   }
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isAuthenticated = false;
+  bool isLoggedIn = false;
+  bool isLoading = true;
+  dynamic error;
 
-  void setIsAuthenticated(bool value) {
-    setState(() {
-      isAuthenticated = value;
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  void login() {
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        isLoggedIn = true;
+      });
+    });
+  }
+
+  void logout() {
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        isLoggedIn = false;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: getRouter(isAuthenticated),
+      routerConfig: getRouter(
+        isLoading: isLoading,
+        error: error,
+        isLoggedIn: isLoggedIn,
+      ),
       debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
